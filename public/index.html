@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
+  <title>EcoNova · 마라톤 쓰레기통 지도</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♻️</text></svg>" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- 상단 바 -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">♻️</span>
+      <div>
+        <h1>EcoNova</h1>
+        <p id="courseName">마라톤 쓰레기통 지도</p>
+      </div>
+    </div>
+    <button id="demoBtn" class="icon-btn" aria-label="시연 메뉴">⚙️</button>
+  </header>
+
+  <div class="legend">
+    <span><i class="dot ok"></i>여유</span>
+    <span><i class="dot mid"></i>보통</span>
+    <span><i class="dot high"></i>거의 참</span>
+    <span><i class="dot full"></i>꽉 참</span>
+  </div>
+
+  <div id="locBadge" class="loc-badge" hidden></div>
+
+  <!-- 지도 위 버튼 -->
+  <button id="myLocBtn" class="fab" aria-label="내 위치로">📍</button>
+  <button id="camFab" class="cam-fab" aria-label="가까운 쓰레기통 촬영">📷<span>촬영</span></button>
+  <input id="quickCam" type="file" accept="image/*" capture="environment" hidden />
+
+  <!-- 하단 시트 -->
+  <section id="sheet" class="sheet">
+    <div class="grabber" id="grabber"></div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="near">📍 내 주변</button>
+      <button class="tab" data-tab="ai">🤖 AI 수거 우선순위</button>
+    </nav>
+
+    <div class="tab-panel" id="panel-near">
+      <div id="nearestCard" class="nearest"></div>
+      <ul id="nearList" class="bin-list"></ul>
+    </div>
+
+    <div class="tab-panel" id="panel-ai" hidden>
+      <button id="analyzeBtn" class="primary big">🤖 Gemini로 수거 우선순위 분석</button>
+      <p class="hint">현재 쓰레기통 상태 + 급수대 위치 + 내 위치를 보고 어디부터 치울지 알려줘요.</p>
+      <div id="aiResult"></div>
+    </div>
+  </section>
+
+  <!-- 쓰레기통 상세 / 제보 -->
+  <div id="modal" class="modal" hidden>
+    <div class="modal-card">
+      <button class="close" id="modalClose" aria-label="닫기">✕</button>
+      <h2 id="mTitle"></h2>
+      <p id="mMeta" class="meta"></p>
+      <div class="gauge"><div id="mGauge"></div><span id="mGaugeText"></span></div>
+      <p id="mNote" class="note"></p>
+
+      <h3>📷 사진으로 AI 판정</h3>
+      <div class="photo-row">
+        <label class="photo-btn">
+          <input id="photoInput" type="file" accept="image/*" capture="environment" hidden />
+          <span>📷 카메라로 촬영</span>
+        </label>
+        <label class="photo-btn alt">
+          <input id="albumInput" type="file" accept="image/*" hidden />
+          <span>🖼️ 앨범</span>
+        </label>
+      </div>
+      <img id="photoPreview" class="preview" hidden alt="" />
+      <div id="photoResult" class="photo-result"></div>
+
+      <h3>✋ 직접 선택</h3>
+      <div class="quick">
+        <button data-fill="20">여유<br><small>20%</small></button>
+        <button data-fill="50">보통<br><small>50%</small></button>
+        <button data-fill="80">거의 참<br><small>80%</small></button>
+        <button data-fill="100">꽉 참<br><small>100%</small></button>
+      </div>
+      <label class="check"><input type="checkbox" id="overflowChk" /> 주변 바닥에 쓰레기가 넘쳐 있어요</label>
+
+      <button id="clearBtn" class="secondary">✅ 수거 완료 (비움)</button>
+    </div>
+  </div>
+
+  <!-- 시연 메뉴 -->
+  <div id="demoMenu" class="modal" hidden>
+    <div class="modal-card small">
+      <button class="close" data-close="demoMenu" aria-label="닫기">✕</button>
+      <h2>⚙️ 시연 메뉴</h2>
+      <button id="simBtn" class="secondary">🏃 코스 따라 이동 시뮬레이션 시작</button>
+      <button id="fillBtn" class="secondary">🗑️ 쓰레기 차오르게 하기</button>
+      <button id="resetBtn" class="secondary">↺ 전체 초기화</button>
+      <p id="geminiStatus" class="hint"></p>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=7b9e8938cd90098f7c72c38aa4d44986&libraries=services&autoload=false"></script>
+  <script src="app.js"></script>
+</body>
+</html>

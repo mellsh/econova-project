@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>카카오 지도 테스트</title>
+  <link rel="icon" href="data:," />
+  <style>
+    body { margin: 0; font-family: sans-serif; }
+    #map { width: 100%; height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- 아래 YOUR_JS_KEY 를 발급받은 JavaScript 키로 바꾸세요 -->
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=7b9e8938cd90098f7c72c38aa4d44986&libraries=services,clusterer&autoload=false"
+          onerror="document.getElementById('map').innerHTML='<p style=&quot;padding:20px;color:red&quot;>SDK 스크립트 로드 실패 (네트워크/차단 확장프로그램 확인)</p>'"></script>
+  <script>
+    if (typeof kakao === 'undefined') {
+      document.getElementById('map').innerHTML =
+        '<p style="padding:20px;color:red">카카오 SDK를 못 불러왔어요. 현재 주소: ' + location.origin +
+        '<br>→ F12 &gt; Network 탭에서 sdk.js 상태코드를 확인하세요.</p>';
+    } else {
+      // [http 차단 우회] 보안 프로그램이 http://*.kakaocdn.net 요청을 막는 PC 대응
+      // 1) 지도 이미지/타일을 https(터널링)로 받도록 설정
+      kakao.maps.TUNNELING = true;
+      // 2) SDK가 지도 본체 스크립트를 http로 붙일 때 https로 바꿔서 붙이기
+      var head = document.getElementsByTagName('head')[0];
+      var originalAppend = head.appendChild;
+      head.appendChild = function (el) {
+        if (el && el.tagName === 'SCRIPT' && /^http:\/\/[^/]*kakaocdn\.net\//.test(el.src)) {
+          el.src = el.src.replace(/^http:/, 'https:');
+        }
+        return originalAppend.call(this, el);
+      };
+    }
+    if (typeof kakao !== 'undefined')
+    kakao.maps.load(function () {
+      // 광화문 기준
+      var center = new kakao.maps.LatLng(37.5759, 126.9768);
+      var map = new kakao.maps.Map(document.getElementById('map'), {
+        center: center,
+        level: 4
+      });
+
+      // 테스트 마커
+      var marker = new kakao.maps.Marker({ position: center, map: map });
+      var info = new kakao.maps.InfoWindow({
+        content: '<div style="padding:6px 10px;">테스트 제보 지점 🗑️</div>'
+      });
+      info.open(map, marker);
+    });
+  </script>
+</body>
+</html>

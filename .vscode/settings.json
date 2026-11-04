@@ -1,0 +1,4 @@
+{
+  // Live Server가 EcoNova 서버(5500)와 포트가 겹치지 않게
+  "liveServer.settings.port": 5510
+}
